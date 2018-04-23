@@ -7,6 +7,7 @@ This is a temporary script file.
 import time
 import os
 import ast
+import pandas as pd
 
 
 def gen_opener(filename):
@@ -35,7 +36,7 @@ def gen_concatenate(iterators):
 def find_id(lines):
     for line in lines:
         t = ast.literal_eval(line)
-        if t.get('network_name') == 'appier_int' and t.get('activity_kind') == 'install':
+        if t.get('network_name') == 'network_name' and t.get('activity_kind') == 'install':
             click_time = t.get('click_time')
             installed_at = t.get('installed_at')
             adid = t.get('adid')
@@ -59,7 +60,7 @@ def find_file(top):
     file_path_list = []
     for path, dirlist, filelist in os.walk(top):
         for filename in filelist:
-            if filename == '.DS_Store':
+            if filename == '.DS_Store':                 # if you use macos
                 pass
             else:
                 filepath = os.path.join(path, filename)
