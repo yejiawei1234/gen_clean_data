@@ -8,6 +8,7 @@ import os
 import ast
 import pandas as pd
 from multiprocessing import Pool
+import click
 
 
 def gen_opener(filename):
@@ -89,6 +90,10 @@ def deal_data2(filename):
     date = get_date(filename)
     df['date'] = date
     df.to_excel(f'/Users/yeye/Desktop/output/{date}.xlsx')
+
+
+input_folder_path = None
+output_folder_path = None
 
 
 if __name__ == '__main__':
