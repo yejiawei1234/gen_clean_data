@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Spyder Editor
 
-This is a temporary script file.
+﻿@author: yejiawei
 """
 import time
 import os
 import ast
 import pandas as pd
+from multiprocessing import Pool
 
 
 def gen_opener(filename):
@@ -60,7 +60,7 @@ def find_file(top):
     file_path_list = []
     for path, dirlist, filelist in os.walk(top):
         for filename in filelist:
-            if filename == '.DS_Store':                 # if you use macos
+            if filename.startswith('.'):
                 pass
             else:
                 filepath = os.path.join(path, filename)
@@ -80,9 +80,21 @@ def deal_data(filepath):
         df.to_excel(f'/Users/yeye/Desktop/output/{date}.xlsx')
 
 
-start = time.time()
-filelist = find_file('/Users/yeye/Desktop/mffaen')
-deal_data(filelist)
+def deal_data2(filename):
+    print(filename)
+    file = gen_opener(filename)
+    lines = gen_concatenate(file)
+    id_info = find_id(lines)
+    df = pd.DataFrame(id_info)
+    date = get_date(filename)
+    df['date'] = date
+    df.to_excel(f'/Users/yeye/Desktop/output/{date}.xlsx')
 
-end = time.time()
-print(f'{end - start}')
+
+if __name__ == '__main__':
+    start = time.time()
+    filelist = find_file('/Users/yeye/Desktop/input')
+    pool = Pool()
+    pool.map(deal_data2, filelist)
+    end = time.time()
+    print(f'{end - start}')    # Finally, this script can use all CPU power!!!
