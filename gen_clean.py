@@ -96,6 +96,14 @@ input_folder_path = None
 output_folder_path = None
 
 
+@click.command()
+@click.option('--dir', default='', help='the input folder')
+def find_folder():
+
+
+
+
+
 if __name__ == '__main__':
     start = time.time()
     filelist = find_file('/Users/yeye/Desktop/input')
