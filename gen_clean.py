@@ -9,13 +9,14 @@ import ast
 import pandas as pd
 from multiprocessing import Pool
 import click
+from functools import partial
 
 
 def gen_opener(filename):
-    '''
+    """
     Open a sequence of filenames one at a time producing a file object.
     The file is closed immediately when proceeding to the next iteration.
-    '''
+    """
     f = open(filename, 'r')
     yield f
     f.close()  
@@ -27,9 +28,9 @@ def get_date(filename):
 
     
 def gen_concatenate(iterators):
-    '''
+    """
     Chain a sequence of iterators together into a single sequence.
-    '''
+    """
     for it in iterators:
         yield from it
         
@@ -81,7 +82,7 @@ def deal_data(filepath):
         df.to_excel(f'/Users/yeye/Desktop/output/{date}.xlsx')
 
 
-def deal_data2(filename):
+def deal_data2(filename, folder):
     print(filename)
     file = gen_opener(filename)
     lines = gen_concatenate(file)
@@ -89,25 +90,68 @@ def deal_data2(filename):
     df = pd.DataFrame(id_info)
     date = get_date(filename)
     df['date'] = date
-    df.to_excel(f'/Users/yeye/Desktop/output/{date}.xlsx')
+    df.to_excel(f'{folder}/{date}.xlsx')
 
 
-input_folder_path = None
-output_folder_path = None
+def deal_data_test(filename, folder):
+    date = get_date(filename)
+    print(f'{folder}/{date}.xlsx')
+
+
+def input_folder(input):
+    if not os.path.isabs(input):
+        home_path = os.path.expanduser('~/Desktop')
+        input_folder_path = os.path.join(home_path, input)
+        if os.path.exists(input_folder_path):
+            print(input_folder_path)
+            return input_folder_path
+        else:
+            raise ValueError('This folder is not existed in Desktop folder')
+    else:
+        if os.path.exists(input):
+            print('-------', input)
+            return input
+        else:
+            raise ValueError('This folder is not existed')
+
+
+def output_folder(output):
+    if not os.path.isabs(output):
+        home_path = os.path.expanduser('~/Desktop')
+        output_folder_path = os.path.join(home_path, output)
+        if os.path.exists(output_folder_path):
+            print(output_folder_path)
+            return output_folder_path
+        else:
+            print('the output folder is not existed, creating the folder now')
+            os.mkdir(output_folder_path)
+            return output_folder_path
+    else:
+        if os.path.exists(output):
+            print('-------', output)
+            return output
+        else:
+            print('the output folder is not existed, creating the folder now')
+            os.mkdir(output)
+            return output
 
 
 @click.command()
-@click.option('--dir', default='', help='the input folder')
-def find_folder():
-
-
-
+@click.option('--input', default='input', help='The input folder')
+@click.option('--output', default='output', help='The output folder')
+def main(input, output):
+    input_folder_path = input_folder(input)
+    output_folder_path = output_folder(output)
+    start = time.time()
+    filelist = find_file(input_folder_path)
+    pool = Pool()
+    deal_data_ = partial(deal_data2, folder=output_folder_path)
+    pool.map(deal_data_, filelist)
+    end = time.time()
+    print(f'{end-start}')
 
 
 if __name__ == '__main__':
-    start = time.time()
-    filelist = find_file('/Users/yeye/Desktop/input')
-    pool = Pool()
-    pool.map(deal_data2, filelist)
-    end = time.time()
-    print(f'{end - start}')    # Finally, this script can use all CPU power!!!
+    # Finally, this script can use full power of CPU!!!
+    main()
+
