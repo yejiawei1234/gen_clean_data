@@ -1,0 +1,3 @@
+# data clean script for Adjust callback log
+
+This script do only one thing that clean Adjust callback log. You can modify the  ```find_id``` func to suit your need. If you want to change the output file format, your can change the ```deal_data```(This func is for single thread), or ```deal_data2```(This func is used for multiprocessing), If your company using Adjust as mobile attribution provider, well, this script is for you. Any problem? Contact me: yejiawei123@gmail.com. Good luck~~~  
